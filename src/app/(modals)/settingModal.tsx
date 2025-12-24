@@ -583,9 +583,12 @@ const SettingModal = () => {
 	const DismissPlayerSymbol = () => {
 		const { top } = useSafeAreaInsets()
 		return (
-			<View style={[styles.dismissSymbol, { top: top - 25 }]}>
+			<TouchableOpacity
+				style={[styles.dismissSymbol, { top: top - 25 }]}
+				onPress={() => router.back()}
+			>
 				<View style={styles.dismissBar} />
-			</View>
+			</TouchableOpacity>
 		)
 	}
 	const handleClearCache = async () => {
