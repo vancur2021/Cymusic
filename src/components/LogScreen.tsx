@@ -2,6 +2,7 @@ import { colors, fontSize, screenPadding } from '@/constants/tokens'
 import { logError, useLoggerHook } from '@/helpers/logger'
 import i18n from '@/utils/i18n'
 import { Ionicons } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
 import {
 	Alert,
@@ -19,7 +20,11 @@ import {
 	TouchableWithoutFeedback,
 	View,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 const LogScreen = () => {
+	const router = useRouter()
+	const { top } = useSafeAreaInsets()
 	const { logs, clearLogs } = useLoggerHook()
 	const [selectedLog, setSelectedLog] = useState<null | any>(null)
 
@@ -85,8 +90,36 @@ const LogScreen = () => {
 		}
 	}
 
+	const DismissPlayerSymbol = () => {
+		return (
+			<TouchableOpacity
+				style={{
+					position: 'absolute',
+					top: 10,
+					left: 0,
+					right: 0,
+					flexDirection: 'row',
+					justifyContent: 'center',
+					zIndex: 1,
+				}}
+				onPress={() => router.back()}
+			>
+				<View
+					style={{
+						width: 50,
+						height: 8,
+						borderRadius: 8,
+						backgroundColor: '#fff',
+						opacity: 0.7,
+					}}
+				/>
+			</TouchableOpacity>
+		)
+	}
+
 	return (
 		<SafeAreaView style={styles.safeArea}>
+			<DismissPlayerSymbol />
 			<View style={styles.container}>
 				<View style={styles.header}>
 					<Text style={styles.title}>{i18n.t('logScreen.title')}</Text>
@@ -158,7 +191,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: colors.background,
 		paddingHorizontal: screenPadding.horizontal,
-		// 移除 paddingTop: 16，避免内容被顶部遮挡
+		paddingTop: 30,
 	},
 	header: {
 		flexDirection: 'row',
