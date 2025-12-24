@@ -540,9 +540,17 @@ const addPlayLists = (playlist: IMusic.PlayList) => {
 		const nowPlayLists = playListsStore.getValue() || []
 
 		// 检查播放列表是否已存在
-		const playlistExists = nowPlayLists.some(
-			(existingPlaylist) => existingPlaylist.id == playlist.id,
-		)
+		// 对于在线歌单，使用 onlineId 和 source 进行判断
+		// 对于本地歌单，使用 id 进行判断
+		const playlistExists = nowPlayLists.some((existingPlaylist) => {
+			if (playlist.onlineId && playlist.source) {
+				return (
+					existingPlaylist.onlineId === playlist.onlineId &&
+					existingPlaylist.source === playlist.source
+				)
+			}
+			return existingPlaylist.id == playlist.id
+		})
 
 		if (playlistExists) {
 			// logInfo(`Playlist already exists, not adding duplicate. Current playlists: ${JSON.stringify(nowPlayLists, null, 2)}`);

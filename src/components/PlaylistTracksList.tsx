@@ -22,6 +22,7 @@ type PlaylistTracksListProps = {
 	onSelectAll?: () => void
 	deleteSelectedTracks?: () => void
 	exportSelectedTracks?: () => void
+	headerRight?: React.ReactNode
 }
 
 export const PlaylistTracksList = ({
@@ -38,6 +39,7 @@ export const PlaylistTracksList = ({
 	onSelectAll,
 	deleteSelectedTracks,
 	exportSelectedTracks,
+	headerRight,
 }: PlaylistTracksListProps) => {
 	// const filteredPlaylistTracks = useMemo(() => {
 	// 	return playlist.tracks.filter(trackTitleFilter(search))
@@ -61,9 +63,12 @@ export const PlaylistTracksList = ({
 						/>
 					</View>
 
-					<Text numberOfLines={1} style={styles.playlistNameText}>
-						{playlist.title}
-					</Text>
+					<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 22 }}>
+						<Text numberOfLines={1} style={[styles.playlistNameText, { marginTop: 0 }]}>
+							{playlist.title}
+						</Text>
+						{headerRight && <View style={{ marginLeft: 10 }}>{headerRight}</View>}
+					</View>
 
 					<QueueControls
 						style={{ paddingTop: 24 }}

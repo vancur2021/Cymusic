@@ -188,6 +188,12 @@ declare namespace IMusic {
         name: string;
         /** 歌单封面图 */
         artwork: string;
+        /** 歌单描述 */
+        description?: string;
+        /** 歌单封面图 (兼容旧字段) */
+        coverImg?: string;
+        /** 在线歌单ID */
+        onlineId?: string;
         /** 音源 */
         source?: Partial<Record<IQualityKey, IMediaSource>>;
 

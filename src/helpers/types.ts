@@ -16,6 +16,10 @@ export type Playlist = {
 	/** 作者 */
 	artist: string
 	songs: IMusic.IMusicItem[]
+	/** 在线歌单ID */
+	onlineId?: string
+	/** 音源 */
+	source?: string
 }
 
 export type Artist = {

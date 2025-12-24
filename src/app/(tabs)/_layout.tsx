@@ -55,6 +55,15 @@ const TabsNavigation = () => {
 					}}
 				/>
 				<Tabs.Screen
+					name="playlists"
+					options={{
+						title: '歌单',
+						tabBarIcon: ({ color }) => (
+							<MaterialCommunityIcons name="playlist-music" size={24} color={color} />
+						),
+					}}
+				/>
+				<Tabs.Screen
 					name="favorites"
 					options={{
 						title: i18n.t('appTab.favorites'),
