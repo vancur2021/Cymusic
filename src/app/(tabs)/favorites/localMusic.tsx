@@ -198,6 +198,7 @@ const LocalMusicScreen = () => {
 					onSelectAll={toggleSelectAll}
 					deleteSelectedTracks={deleteSelectedTracks}
 					exportSelectedTracks={exportSelectedTracks}
+					showDownloadButton={false}
 				/>
 			</ScrollView>
 		</View>

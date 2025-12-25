@@ -20,6 +20,7 @@ type QueueControlsProps = {
 	isAllSelected?: boolean
 	deleteSelectedTracks?: () => void
 	exportSelectedTracks?: () => void
+	showDownloadButton?: boolean
 } & ViewProps
 
 export const QueueControls = ({
@@ -32,6 +33,7 @@ export const QueueControls = ({
 	isAllSelected = false,
 	deleteSelectedTracks,
 	exportSelectedTracks,
+	showDownloadButton = true,
 	...viewProps
 }: QueueControlsProps) => {
 	const handlePlay = async () => {
@@ -163,7 +165,7 @@ export const QueueControls = ({
 				</View>
 			)}
 			{/* Download button */}
-			{!isMultiSelectMode && (
+			{!isMultiSelectMode && showDownloadButton && (
 				<View style={{ flex: 1 }}>
 					<TouchableOpacity 
 						onPress={handleDownload} 

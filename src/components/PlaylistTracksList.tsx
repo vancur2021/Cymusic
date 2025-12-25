@@ -23,6 +23,7 @@ type PlaylistTracksListProps = {
 	deleteSelectedTracks?: () => void
 	exportSelectedTracks?: () => void
 	headerRight?: React.ReactNode
+	showDownloadButton?: boolean
 }
 
 export const PlaylistTracksList = ({
@@ -40,6 +41,7 @@ export const PlaylistTracksList = ({
 	deleteSelectedTracks,
 	exportSelectedTracks,
 	headerRight,
+	showDownloadButton = true,
 }: PlaylistTracksListProps) => {
 	// const filteredPlaylistTracks = useMemo(() => {
 	// 	return playlist.tracks.filter(trackTitleFilter(search))
@@ -80,6 +82,7 @@ export const PlaylistTracksList = ({
 						isAllSelected={selectedTracks.size === tracks.length}
 						deleteSelectedTracks={deleteSelectedTracks}
 						exportSelectedTracks={exportSelectedTracks}
+						showDownloadButton={showDownloadButton}
 					/>
 				</View>
 			}
