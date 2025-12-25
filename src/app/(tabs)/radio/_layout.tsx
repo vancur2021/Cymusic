@@ -21,6 +21,7 @@ const RadiolistsScreenLayout = () => {
 					options={{
 						headerTitle: '',
 						headerBackVisible: true,
+						headerShadowVisible: false,
 						headerStyle: {
 							backgroundColor: colors.background,
 						},
