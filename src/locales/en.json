@@ -92,7 +92,7 @@
 	"appTab": {
 		"songs": "Songs",
 		"search": "Search",
-		"radio": "Radio",
+		"radio": "Top Lists",
 		"favorites": "Favorites",
 		"favoritesSongs": "Favorite Songs",
 		"localOrCachedSongs": "Local/Cached Songs"
@@ -103,7 +103,7 @@
 		"import": "Import"
 	},
 	"find": {
-		"inRadio": "Find in Radio",
+		"inRadio": "Find in Top Lists",
 		"inSearch": "Find Songs or Artists Online",
 		"inSongs": "Find in Songs",
 		"inFavorites": "Find in Favorites",
