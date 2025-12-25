@@ -52,7 +52,10 @@ const FavoritesScreen = () => {
 			router.push(`/(tabs)/favorites/localMusic`)
 		} else if (playlist.onlineId && playlist.source) {
 			// 如果是在线收藏歌单，跳转到在线歌单详情页
-			router.push(`/(tabs)/playlists/${playlist.onlineId}`)
+			router.push({
+				pathname: `/(tabs)/favorites/[name]`,
+				params: { name: playlist.onlineId, isOnline: 'true' },
+			})
 		} else {
 			router.push(`/(tabs)/favorites/${playlist.id}`)
 		}
