@@ -109,8 +109,7 @@ const PlaylistDetailScreen = () => {
 			<Stack.Screen
 				options={{
 					headerTitle: '',
-					headerTransparent: true,
-					headerTintColor: colors.text,
+					headerTintColor: colors.primary,
 				}}
 			/>
 			<ScrollView
