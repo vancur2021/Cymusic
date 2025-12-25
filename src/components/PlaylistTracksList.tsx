@@ -63,8 +63,8 @@ export const PlaylistTracksList = ({
 						/>
 					</View>
 
-					<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 22 }}>
-						<Text numberOfLines={1} style={[styles.playlistNameText, { marginTop: 0 }]}>
+					<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 22, paddingHorizontal: 20 }}>
+						<Text numberOfLines={1} style={[styles.playlistNameText, { marginTop: 0, flex: 1 }]}>
 							{playlist.title}
 						</Text>
 						{headerRight && <View style={{ marginLeft: 10 }}>{headerRight}</View>}
