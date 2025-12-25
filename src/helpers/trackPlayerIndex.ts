@@ -34,6 +34,7 @@ import { Alert, AppState, Image } from 'react-native'
 import { myGetLyric } from '@/helpers/userApi/getMusicSource'
 
 import { fakeAudioMp3Uri } from '@/constants/images'
+import { useDownloadStore } from '@/store/useDownloadStore'
 import { nowLanguage } from '@/utils/i18n'
 import { showToast } from '@/utils/utils'
 import { logError, logInfo } from './logger'
@@ -847,9 +848,9 @@ const play = async (musicItem?: IMusic.IMusicItem | null, forcePlay?: boolean) =
 		if (cached) {
 			const localPath = getLocalFilePath(musicItem)
 			source = {
-				url: localPath,
+				url: `file://${localPath}`,
 			}
-			logInfo('使用缓存的音频路径播放:', localPath)
+			logInfo('使用缓存的音频路径播放:', source.url)
 		}
 		if (!isCurrentMusic(musicItem)) {
 			return
@@ -987,16 +988,8 @@ const play = async (musicItem?: IMusic.IMusicItem | null, forcePlay?: boolean) =
 			// 下载到缓存，延迟5秒后执行
 			logInfo('将在5秒后下载缓存:', track.url)
 			setTimeout(() => {
-				downloadToCache(track)
-					.then((localUri) => {
-						logInfo('音乐已缓存到本地:', localUri)
-						// 更新url,为了删除能够正常删除
-						const newTrack = { ...track, url: localUri }
-						addImportedLocalMusic([newTrack], false)
-					})
-					.catch((error) => {
-						logError('缓存音乐时出错:', error)
-					})
+				// 接入统一的下载 Store，以便显示进度
+				useDownloadStore.getState().addToQueue([track as Track])
 			}, 5000) // 延迟5000毫秒（5秒）
 		}
 
@@ -1254,9 +1247,16 @@ const ensureDirExists = async (dirPath: string) => {
  * @param musicItem 音乐项
  * @returns 本地文件路径
  */
-const getLocalFilePath = (musicItem: IMusic.IMusicItem): string => {
+export const getLocalFilePath = (musicItem: IMusic.IMusicItem): string => {
+	// 强制根据当前音质设置决定后缀，确保一致性
 	const format = qualityStore.getValue() === 'flac' ? 'flac' : 'mp3'
-	return `${cacheDir}${musicItem.title}-${musicItem.artist}.${format}`
+	
+	// 严格过滤文件名中的非法字符，确保路径安全
+	// 增加对 . 的过滤，防止类似 .com 这种后缀干扰
+	const safeTitle = musicItem.title.replace(/[/\\?%*:|"<>.]/g, '').trim()
+	const safeArtist = musicItem.artist.replace(/[/\\?%*:|"<>.]/g, '').trim()
+	
+	return `${cacheDir}${safeTitle}-${safeArtist}.${format}`
 }
 
 /**

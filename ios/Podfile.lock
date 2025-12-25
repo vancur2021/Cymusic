@@ -1,7 +1,7 @@
 PODS:
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
-  - EXConstants (15.4.5):
+  - EXConstants (15.4.6):
     - ExpoModulesCore
   - EXFont (11.10.3):
     - ExpoModulesCore
@@ -88,7 +88,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (12.8.1):
     - ExpoModulesCore
-  - ExpoHead (3.4.10):
+  - ExpoHead (3.4.8):
     - ExpoModulesCore
   - ExpoImagePicker (14.7.1):
     - ExpoModulesCore
@@ -107,7 +107,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoShareIntentModule (1.9.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.26.5):
+  - EXSplashScreen (0.26.4):
     - ExpoModulesCore
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1545,7 +1545,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
-  EXConstants: 348adb88fb0d65892f16732ec5e02e1365c31588
+  EXConstants: c82ef9280044accc91fb6082047afdc9a408f61a
   EXFont: 64e653a110eee050ad80dfcd676c4bada0a1ff92
   EXImageLoader: ba2506b443b9656e93167c104406a2c265924823
   EXJSONUtils: 5c42959e87be238b045ef37cc5268b16a6c0ad4a
@@ -1559,14 +1559,14 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 3204d5169a090ddbb23c4bf035bb86c3a6ea0ec2
   ExpoFileSystem: 1782f764e82822d89ff8f24dd51262a743a95967
   ExpoHaptics: c91902e436f3fb0e07aa19acc118018089fa90de
-  ExpoHead: 304de9c15437e3c4c0691587a3bb59ae42ad399f
+  ExpoHead: dae7e0e9f8b2e65f8fb56f7a7fe1014a1eacc6ab
   ExpoImagePicker: d06822d74f1f0e7fe7cb070ece0fff6e678fa3eb
   ExpoKeepAwake: 3b8cf8533b9212500565a1e41fb080fc5af29918
   ExpoLinearGradient: 501f9bbd83f3ec1d0e0425862b9ef4693605fc1c
   ExpoLocalization: 7423aa1abcc59209dc2ce2b9bb63776a18023a98
   ExpoModulesCore: b96fa696e035bf3a586daa87e547f2d3dbd07800
   ExpoShareIntentModule: 33954393372cd4b0d0c010575a751862104abbe8
-  EXSplashScreen: dd2dd171af558302d925bb90e3bd2e139ffa0d92
+  EXSplashScreen: a3a2dbbea3ffd61ceca25553f688eed8391033a3
   EXUpdatesInterface: 3e444e2093e25b7ca0999a7d8c16e8392dee70c3
   FBLazyVector: f64d1e2ea739b4d8f7e4740cde18089cd97fe864
   FBReactNativeSpec: 9f2b8b243131565335437dba74923a8d3015e780

@@ -1,6 +1,7 @@
 import { colors } from '@/constants/tokens'
 import myTrackPlayer, { MusicRepeatMode, repeatModeStore } from '@/helpers/trackPlayerIndex'
 import { setPlayList } from '@/store/playList'
+import { useDownloadStore } from '@/store/useDownloadStore'
 import { defaultStyles } from '@/styles'
 import i18n from '@/utils/i18n'
 import { Ionicons } from '@expo/vector-icons'
@@ -50,6 +51,36 @@ export const QueueControls = ({
 		)
 	}
 
+	const { addToQueue, clearQueueByTracks, tasks } = useDownloadStore()
+
+	// 检查当前歌单是否正在下载
+	const playlistTrackIds = tracks.map((t) => t.id)
+	const downloadingTracks = Object.values(tasks).filter(
+		(t) => playlistTrackIds.includes(t.track.id) && (t.status === 'downloading' || t.status === 'waiting'),
+	)
+	const isDownloading = downloadingTracks.length > 0
+
+	const handleDownload = () => {
+		if (isDownloading) {
+			clearQueueByTracks(playlistTrackIds)
+		} else {
+			// 过滤掉已缓存的歌曲
+			const startBatchDownload = async () => {
+				const unCachedTracks: Track[] = []
+				for (const track of tracks) {
+					const cached = await myTrackPlayer.isCached(track as IMusic.IMusicItem)
+					if (!cached) {
+						unCachedTracks.push(track)
+					}
+				}
+				if (unCachedTracks.length > 0) {
+					addToQueue(unCachedTracks)
+				}
+			}
+			startBatchDownload()
+		}
+	}
+
 	return (
 		<View style={[{ flexDirection: 'row', columnGap: 16 }, style]} {...viewProps}>
 			{/* Play button */}
@@ -96,6 +127,20 @@ export const QueueControls = ({
 					</TouchableOpacity>
 				</View>
 			)}
+			{/* Download button */}
+			{!isMultiSelectMode && (
+				<View style={{ flex: 1 }}>
+					<TouchableOpacity onPress={handleDownload} activeOpacity={0.8} style={styles.button}>
+						<Ionicons
+							name={isDownloading ? 'stop-circle-outline' : 'cloud-download-outline'}
+							size={24}
+							color={colors.primary}
+						/>
+						<Text style={styles.buttonText}>{isDownloading ? '停止' : '下载'}</Text>
+					</TouchableOpacity>
+				</View>
+			)}
+
 			{/* import button */}
 			{showImportMenu && (
 				<View style={{ flex: 1 }}>

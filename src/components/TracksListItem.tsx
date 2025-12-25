@@ -3,12 +3,13 @@ import { unknownTrackImageUri } from '@/constants/images'
 import { colors, fontSize } from '@/constants/tokens'
 import myTrackPlayer from '@/helpers/trackPlayerIndex'
 import PersistStatus from '@/store/PersistStatus'
+import { useDownloadStore } from '@/store/useDownloadStore'
 import { defaultStyles } from '@/styles'
 import rpx from '@/utils/rpx'
 import { Entypo, Ionicons } from '@expo/vector-icons'
 import React, { memo, useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
-import FastImage from 'react-native-fast-image' //导入默认导出时，不需要使用大括号 {}，并且可以使用任意名称来引用导入的值。
+import FastImage from 'react-native-fast-image'; //导入默认导出时，不需要使用大括号 {}，并且可以使用任意名称来引用导入的值。
 import LoaderKit from 'react-native-loader-kit'
 import { Track, useActiveTrack, useIsPlaying } from 'react-native-track-player'
 import { StopPropagation } from './utils/StopPropagation'
@@ -47,6 +48,10 @@ const TracksListItem = ({
 	// 添加缓存状态检查
 	const [isCached, setIsCached] = useState(false)
 	const isCachedIconVisible = PersistStatus.get('music.isCachedIconVisible') ?? true
+
+	// 获取下载状态
+	const downloadTask = useDownloadStore((state) => state.tasks[track.id])
+
 	useEffect(() => {
 		// 检查歌曲是否已缓存
 		const checkCache = async () => {
@@ -59,7 +64,15 @@ const TracksListItem = ({
 			}
 		}
 		checkCache()
-	}, [track])
+	}, [track, downloadTask?.status])
+
+	// 自动清理已完成的下载任务状态，以便显示缓存图标
+	useEffect(() => {
+		if (downloadTask?.status === 'completed') {
+			// 立即清理状态，以便触发 isCached 逻辑显示云朵
+			useDownloadStore.getState().removeTask(track.id)
+		}
+	}, [downloadTask?.status, track.id])
 	return (
 		<TouchableHighlight
 			onPress={() => (isMultiSelectMode ? onToggleSelection?.(track.id) : handleTrackSelect(track))}
@@ -105,6 +118,27 @@ const TracksListItem = ({
 								color={colors.icon}
 							/>
 						))}
+
+					{/* 下载进度圆圈 */}
+					{downloadTask &&
+						(downloadTask.status === 'downloading' || downloadTask.status === 'waiting') && (
+							<View style={styles.downloadProgressContainer}>
+								<View style={styles.downloadProgressBackground} />
+								<View
+									style={[
+										styles.downloadProgressForeground,
+										{
+											height: `${downloadTask.progress * 100}%`,
+										},
+									]}
+								/>
+								{downloadTask.status === 'waiting' ? (
+									<Ionicons name="time-outline" size={12} color={colors.icon} />
+								) : (
+									<Text style={styles.progressText}>{Math.round(downloadTask.progress * 100)}%</Text>
+								)}
+							</View>
+						)}
 				</View>
 				<View
 					style={{
@@ -122,7 +156,7 @@ const TracksListItem = ({
 								color: isActiveTrack ? colors.primary : colors.text,
 							}}
 						>
-							{isCached && isCachedIconVisible && (
+							{(isCached || downloadTask?.status === 'completed') && isCachedIconVisible && (
 								<>
 									<Ionicons name="cloud-done-outline" size={12} style={{ marginRight: 8 }} />{' '}
 								</>
@@ -172,6 +206,39 @@ const styles = StyleSheet.create({
 		columnGap: 14,
 		alignItems: 'center',
 		paddingRight: 0,
+	},
+	downloadProgressContainer: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		width: 50,
+		height: 50,
+		borderRadius: 8,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'center',
+		alignItems: 'center',
+		overflow: 'hidden',
+	},
+	downloadProgressBackground: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		top: 0,
+		backgroundColor: 'rgba(255,255,255,0.1)',
+	},
+	downloadProgressForeground: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		backgroundColor: colors.primary,
+		opacity: 0.4,
+	},
+	progressText: {
+		color: '#fff',
+		fontSize: 10,
+		fontWeight: 'bold',
 	},
 	trackPlayingIconIndicator: {
 		position: 'absolute',
