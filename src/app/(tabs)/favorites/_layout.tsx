@@ -23,6 +23,7 @@ const FavoritesScreenLayout = () => {
 					options={{
 						headerTitle: '',
 						headerBackVisible: true,
+						headerShadowVisible: false,
 						headerStyle: {
 							backgroundColor: colors.background,
 						},
@@ -34,6 +35,7 @@ const FavoritesScreenLayout = () => {
 					options={{
 						headerTitle: '',
 						headerBackVisible: true,
+						headerShadowVisible: false,
 						headerStyle: {
 							backgroundColor: colors.background,
 						},
@@ -45,6 +47,7 @@ const FavoritesScreenLayout = () => {
 					options={{
 						headerTitle: '',
 						headerBackVisible: true,
+						headerShadowVisible: false,
 						headerStyle: {
 							backgroundColor: colors.background,
 						},
