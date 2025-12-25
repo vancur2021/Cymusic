@@ -6,6 +6,7 @@ import { defaultStyles } from '@/styles'
 import i18n from '@/utils/i18n'
 import { Ionicons } from '@expo/vector-icons'
 import shuffle from 'lodash.shuffle'
+import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, ViewProps } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Track } from 'react-native-track-player'
@@ -60,10 +61,44 @@ export const QueueControls = ({
 	)
 	const isDownloading = downloadingTracks.length > 0
 
+	const [isAllCached, setIsAllCached] = useState(false)
+
+	useEffect(() => {
+		let isMounted = true
+		const checkAllCached = async () => {
+			if (isDownloading) {
+				if (isMounted) setIsAllCached(false)
+				return
+			}
+
+			let allCached = true
+			// 如果列表为空，不显示已下载
+			if (tracks.length === 0) {
+				allCached = false
+			} else {
+				for (const track of tracks) {
+					const cached = await myTrackPlayer.isCached(track as IMusic.IMusicItem)
+					if (!cached) {
+						allCached = false
+						break
+					}
+				}
+			}
+			
+			if (isMounted) setIsAllCached(allCached)
+		}
+
+		checkAllCached()
+
+		return () => {
+			isMounted = false
+		}
+	}, [tracks, tasks, isDownloading])
+
 	const handleDownload = () => {
 		if (isDownloading) {
 			clearQueueByTracks(playlistTrackIds)
-		} else {
+		} else if (!isAllCached) {
 			// 过滤掉已缓存的歌曲
 			const startBatchDownload = async () => {
 				const unCachedTracks: Track[] = []
@@ -130,13 +165,20 @@ export const QueueControls = ({
 			{/* Download button */}
 			{!isMultiSelectMode && (
 				<View style={{ flex: 1 }}>
-					<TouchableOpacity onPress={handleDownload} activeOpacity={0.8} style={styles.button}>
+					<TouchableOpacity 
+						onPress={handleDownload} 
+						activeOpacity={0.8} 
+						style={[styles.button, isAllCached && !isDownloading && { opacity: 0.6 }]}
+						disabled={isAllCached && !isDownloading}
+					>
 						<Ionicons
-							name={isDownloading ? 'stop-circle-outline' : 'cloud-download-outline'}
+							name={isDownloading ? 'stop-circle-outline' : (isAllCached ? 'cloud-done-outline' : 'cloud-download-outline')}
 							size={24}
 							color={colors.primary}
 						/>
-						<Text style={styles.buttonText}>{isDownloading ? '停止' : '下载'}</Text>
+						<Text style={styles.buttonText}>
+							{isDownloading ? '停止' : (isAllCached ? '已下载' : '下载')}
+						</Text>
 					</TouchableOpacity>
 				</View>
 			)}
