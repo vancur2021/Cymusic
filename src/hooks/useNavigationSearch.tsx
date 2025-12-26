@@ -15,11 +15,13 @@ export const useNavigationSearch = ({
 	onFocus,
 	onBlur,
 	onCancel,
+	searchOnSubmit = false,
 }: {
 	searchBarOptions?: SearchBarProps
 	onFocus?: () => void
 	onBlur?: () => void
 	onCancel?: () => void
+	searchOnSubmit?: boolean
 }) => {
 	const [search, setSearch] = useState('')
 
@@ -34,7 +36,20 @@ export const useNavigationSearch = ({
 	)
 
 	const handleOnChangeText: SearchBarProps['onChangeText'] = ({ nativeEvent: { text } }) => {
-		debouncedSetSearch(text)
+		if (!searchOnSubmit) {
+			debouncedSetSearch(text)
+		} else if (text === '') {
+			// 即使是提交模式，清空输入框时也应该立即清空搜索状态
+			setSearch('')
+		}
+	}
+
+	const handleOnSearchButtonPress: SearchBarProps['onSearchButtonPress'] = ({
+		nativeEvent: { text },
+	}) => {
+		if (searchOnSubmit) {
+			setSearch(text)
+		}
 	}
 
 	useLayoutEffect(() => {
@@ -43,15 +58,17 @@ export const useNavigationSearch = ({
 				...defaultSearchOptions,
 				...searchBarOptions,
 				onChangeText: handleOnChangeText,
+				onSearchButtonPress: handleOnSearchButtonPress,
 				onFocus: onFocus,
 				onBlur: onBlur,
 				onCancelButtonPress: (e) => {
+					setSearch('') // 取消时清空
 					onCancel?.()
 					searchBarOptions?.onCancelButtonPress?.(e)
 				},
 			},
 		})
-	}, [navigation, searchBarOptions, onFocus, onBlur, onCancel])
+	}, [navigation, searchBarOptions, onFocus, onBlur, onCancel, searchOnSubmit])
 
 	return search
 }

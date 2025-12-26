@@ -1,7 +1,6 @@
 import { PlaylistsList } from '@/components/PlaylistsList'
 import musicSdk from '@/components/utils/musicSdk'
 import { colors, fontSize, screenPadding } from '@/constants/tokens'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigationSearch } from '@/hooks/useNavigationSearch'
 import { defaultStyles } from '@/styles'
 import { useRouter } from 'expo-router'
@@ -15,8 +14,8 @@ const PlaylistsScreen = () => {
 			placeholder: '在歌单中搜索',
 			cancelButtonText: '取消',
 		},
+		searchOnSubmit: true,
 	})
-	const debouncedSearch = useDebounce(search, 500)
 	const [playlists, setPlaylists] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [tags, setTags] = useState([])
@@ -49,9 +48,9 @@ const PlaylistsScreen = () => {
 			const currentPage = refresh ? 1 : page
 			let data
 			
-			if (debouncedSearch) {
+			if (search) {
 				// 搜索模式
-				data = await musicSdk['tx'].songList.search(debouncedSearch, currentPage)
+				data = await musicSdk['tx'].songList.search(search, currentPage)
 			} else {
 				// 推荐模式
 				data = await musicSdk['tx'].songList.getList(sortId, selectedTagId, currentPage)
@@ -74,14 +73,14 @@ const PlaylistsScreen = () => {
 		} finally {
 			setIsLoading(false)
 		}
-	}, [isLoading, hasMore, page, sortId, selectedTagId, debouncedSearch])
+	}, [isLoading, hasMore, page, sortId, selectedTagId, search])
 
 	// 初始加载和筛选条件变化时刷新
 	useEffect(() => {
 		setPage(1)
 		setHasMore(true)
 		fetchPlaylists(true)
-	}, [sortId, selectedTagId, debouncedSearch])
+	}, [sortId, selectedTagId, search])
 
 	const handleTagPress = (tagId) => {
 		if (selectedTagId === tagId) {
@@ -100,7 +99,7 @@ const PlaylistsScreen = () => {
 			<ScrollView
 				contentInsetAdjustmentBehavior="automatic"
 				style={{ paddingHorizontal: screenPadding.horizontal }}
-				stickyHeaderIndices={!debouncedSearch ? [0] : []} // 搜索模式下不需要吸顶筛选栏
+				stickyHeaderIndices={!search ? [0] : []} // 搜索模式下不需要吸顶筛选栏
 				onScroll={({ nativeEvent }) => {
 					const { layoutMeasurement, contentOffset, contentSize } = nativeEvent
 					const paddingToBottom = 20
@@ -113,7 +112,7 @@ const PlaylistsScreen = () => {
 				}}
 				scrollEventThrottle={400}
 			>
-				{!debouncedSearch && (
+				{!search && (
 					<View style={styles.filterContainer}>
 						<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagsScrollContent}>
 							<TouchableOpacity 
