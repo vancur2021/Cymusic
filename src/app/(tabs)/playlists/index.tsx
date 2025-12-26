@@ -3,6 +3,7 @@ import musicSdk from '@/components/utils/musicSdk'
 import { colors, fontSize, screenPadding } from '@/constants/tokens'
 import { useNavigationSearch } from '@/hooks/useNavigationSearch'
 import { defaultStyles } from '@/styles'
+import { showToast } from '@/utils/utils'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -68,8 +69,10 @@ const PlaylistsScreen = () => {
 			setPlaylists(prev => refresh ? newPlaylists : [...prev, ...newPlaylists])
 			setPage(currentPage + 1)
 			setHasMore(newPlaylists.length >= data.limit)
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to fetch playlists:', error)
+			const errorMsg = error?.message === 'max retry' ? '搜索超时' : '获取歌单失败'
+			showToast(errorMsg, '请稍后重试', 'error')
 		} finally {
 			setIsLoading(false)
 		}
