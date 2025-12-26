@@ -63,6 +63,36 @@ export const songsNumsToLoadStore = new GlobalState<number>(100)
 /** 已导入的本地音乐 */
 export const importedLocalMusicStore = new GlobalState<IMusic.IMusicItem[] | []>(null)
 
+/** 播放超时时间 (15秒) */
+const PLAYBACK_TIMEOUT = 15000
+let playbackTimeoutId: NodeJS.Timeout | null = null
+
+/** 将底层错误信息转换为用户友好的文案 */
+const getFriendlyErrorMessage = (errorMsg: string): string => {
+	const lowerMsg = errorMsg.toLowerCase()
+	if (lowerMsg.includes('timeout') || lowerMsg.includes('timed out')) {
+		return '网络加载超时'
+	}
+	if (
+		lowerMsg.includes('network') ||
+		lowerMsg.includes('connection') ||
+		lowerMsg.includes('internet')
+	) {
+		return '网络连接异常'
+	}
+	if (
+		lowerMsg.includes('403') ||
+		lowerMsg.includes('404') ||
+		lowerMsg.includes('format') ||
+		lowerMsg.includes('source') ||
+		lowerMsg.includes('unavailable')
+	) {
+		return '当前音源不可用'
+	}
+	// 默认返回一个泛化的、非技术性的提示
+	return '暂时无法播放'
+}
+
 export function useCurrentQuality() {
 	const currentQuality = qualityStore.useValue()
 	const setCurrentQuality = (newQuality: IMusic.IQualityKey) => {
@@ -148,6 +178,23 @@ async function setupTrackPlayer() {
 		songsNumsToLoadStore.setValue(songsNumsToLoad)
 	}
 	if (!hasSetupListener) {
+		ReactNativeTrackPlayer.addEventListener(Event.PlaybackState, (event) => {
+			if (playbackTimeoutId) {
+				clearTimeout(playbackTimeoutId)
+				playbackTimeoutId = null
+			}
+
+			if (event.state === State.Buffering || event.state === State.Loading) {
+				playbackTimeoutId = setTimeout(async () => {
+					const currentState = (await ReactNativeTrackPlayer.getPlaybackState()).state
+					if (currentState === State.Buffering || currentState === State.Loading) {
+						logInfo('播放超时，自动跳过')
+						await failToPlay('网络加载超时')
+					}
+				}, PLAYBACK_TIMEOUT)
+			}
+		})
+
 		ReactNativeTrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async (evt) => {
 			if (evt.index === 1 && evt.lastIndex === 0 && evt.track?.$ === internalFakeSoundKey) {
 				logInfo('队列末尾，播放下一首')
@@ -161,6 +208,7 @@ async function setupTrackPlayer() {
 		})
 
 		ReactNativeTrackPlayer.addEventListener(Event.PlaybackError, async (e) => {
+			logInfo('收到 PlaybackError 事件', e)
 			// WARNING: 不稳定，报错的时候有可能track已经变到下一首歌去了
 			const currentTrack = await ReactNativeTrackPlayer.getActiveTrack()
 			if (currentTrack?.isInit) {
@@ -175,14 +223,17 @@ async function setupTrackPlayer() {
 				return
 			}
 
-			if ((await ReactNativeTrackPlayer.getActiveTrackIndex()) === 0 && e.message) {
-				logInfo('播放出错', {
-					message: e.message,
-					code: e.code,
-				})
+			// 只要触发了播放错误事件，就尝试跳过逻辑，防止卡死
+			const rawError = e.message || (e as any).error || ''
+			const friendlyMsg = getFriendlyErrorMessage(rawError)
 
-				await failToPlay()
-			}
+			logInfo('确认执行错误跳过逻辑', {
+				rawError,
+				friendlyMsg,
+				code: e.code,
+			})
+
+			await failToPlay(friendlyMsg)
 		})
 
 		hasSetupListener = true
@@ -228,7 +279,8 @@ const getFakeNextTrack = () => {
 }
 
 /** 播放失败时的情况 */
-async function failToPlay() {
+async function failToPlay(message: string = '暂时无法播放') {
+	showToast(message, '已为您尝试播放下一首', 'error')
 	// 自动跳转下一曲, 500s后自动跳转
 	await ReactNativeTrackPlayer.reset()
 	await delay(500)
@@ -919,12 +971,8 @@ const play = async (musicItem?: IMusic.IMusicItem | null, forcePlay?: boolean) =
 					} catch (error) {
 						nowApiState.setValue('异常')
 						logError('获取音乐 URL 失败:', error)
-						const errorMessage =
-							error.message === '请求超时'
-								? '获取音乐超时，请稍后重试。'
-								: error.message || '获取音乐失败，请稍后重试。'
-						showToast(errorMessage, '', 'error')
-						// showErrorMessage(errorMessage)
+						const friendlyMsg = getFriendlyErrorMessage(error.message || '')
+						showToast(friendlyMsg, '正在尝试备选方案', 'error')
 						resp_url = fakeAudioMp3Uri // 使用假的音频 URL 作为后备
 					}
 				}

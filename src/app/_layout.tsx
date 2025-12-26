@@ -54,55 +54,93 @@ const App = () => {
 		initI18n()
 	}, [])
 	const toastConfig = {
-		/*
-	  Overwrite 'success' type,
-	  by modifying the existing `BaseToast` component
-	*/
 		success: (props) => (
 			<BaseToast
 				{...props}
-				style={{ borderLeftColor: 'rgb(252,87,59)', backgroundColor: 'rgb(251,231,227)' }}
-				contentContainerStyle={{ paddingHorizontal: 15 }}
+				style={{
+					backgroundColor: 'rgba(30, 30, 30, 0.95)',
+					borderLeftWidth: 0,
+					borderRadius: 25,
+					height: 50,
+					width: '85%',
+					marginTop: 10,
+					shadowColor: '#000',
+					shadowOffset: { width: 0, height: 4 },
+					shadowOpacity: 0.3,
+					shadowRadius: 4,
+					elevation: 5,
+				}}
+				contentContainerStyle={{ paddingHorizontal: 20 }}
 				text1Style={{
 					fontSize: 15,
-					fontWeight: '400',
-					color: 'rgb(252,87,59)',
+					fontWeight: '600',
+					color: '#22c55e',
 				}}
 				text2Style={{
-					fontSize: 15,
+					fontSize: 13,
 					fontWeight: '400',
-					color: 'rgb(252,87,59)',
+					color: '#e5e5e5',
 				}}
 			/>
 		),
-		/*
-	  Overwrite 'error' type,
-	  by modifying the existing `ErrorToast` component
-	*/
 		error: (props) => (
 			<ErrorToast
 				{...props}
-				style={{ borderLeftColor: 'rgb(252,87,59)', backgroundColor: 'rgb(251,231,227)' }}
-				contentContainerStyle={{ paddingHorizontal: 15 }}
+				style={{
+					backgroundColor: 'rgba(30, 30, 30, 0.95)',
+					borderLeftWidth: 0,
+					borderRadius: 25,
+					height: 50,
+					width: '85%',
+					marginTop: 10,
+					shadowColor: '#000',
+					shadowOffset: { width: 0, height: 4 },
+					shadowOpacity: 0.3,
+					shadowRadius: 4,
+					elevation: 5,
+				}}
+				contentContainerStyle={{ paddingHorizontal: 20 }}
 				text1Style={{
 					fontSize: 15,
-					fontWeight: '400',
-					color: 'rgb(252,87,59)',
+					fontWeight: '600',
+					color: colors.primary,
 				}}
 				text2Style={{
-					fontSize: 15,
+					fontSize: 13,
 					fontWeight: '400',
-					color: 'rgb(252,87,59)',
+					color: '#e5e5e5',
 				}}
 			/>
 		),
-		/*
-	  Or create a completely new type - `tomatoToast`,
-	  building the layout from scratch.
-  
-	  I can consume any custom `props` I want.
-	  They will be passed when calling the `show` method (see below)
-	*/
+		info: (props) => (
+			<BaseToast
+				{...props}
+				style={{
+					backgroundColor: 'rgba(30, 30, 30, 0.95)',
+					borderLeftWidth: 0,
+					borderRadius: 25,
+					height: 50,
+					width: '85%',
+					marginTop: 10,
+					shadowColor: '#000',
+					shadowOffset: { width: 0, height: 4 },
+					shadowOpacity: 0.3,
+					shadowRadius: 4,
+					elevation: 5,
+				}}
+				contentContainerStyle={{ paddingHorizontal: 20 }}
+				text1Style={{
+					fontSize: 15,
+					fontWeight: '600',
+					color: '#3b82f6',
+				}}
+				text2Style={{
+					fontSize: 13,
+					fontWeight: '400',
+					color: '#e5e5e5',
+				}}
+			/>
+		),
 	}
 	return (
 		<ShareIntentProvider
