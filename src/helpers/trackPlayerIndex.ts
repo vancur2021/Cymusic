@@ -1037,7 +1037,8 @@ const play = async (musicItem?: IMusic.IMusicItem | null, forcePlay?: boolean) =
 			logInfo('将在5秒后下载缓存:', track.url)
 			setTimeout(() => {
 				// 接入统一的下载 Store，以便显示进度
-				useDownloadStore.getState().addToQueue([track as Track])
+				// 传入 source: 'auto'，表示这是播放触发的自动缓存，UI 层不会显示下载进度
+				useDownloadStore.getState().addToQueue([track as Track], 'auto')
 			}, 5000) // 延迟5000毫秒（5秒）
 		}
 

@@ -119,8 +119,9 @@ const TracksListItem = ({
 							/>
 						))}
 
-					{/* 下载进度圆圈 */}
+					{/* 下载进度圆圈 (仅手动下载时显示) */}
 					{downloadTask &&
+						downloadTask.source !== 'auto' &&
 						(downloadTask.status === 'downloading' || downloadTask.status === 'waiting') && (
 							<View style={styles.downloadProgressContainer}>
 								<View style={styles.downloadProgressBackground} />

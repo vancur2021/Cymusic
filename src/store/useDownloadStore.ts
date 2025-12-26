@@ -9,13 +9,14 @@ interface DownloadTask {
 	progress: number
 	status: 'waiting' | 'downloading' | 'paused' | 'completed' | 'failed'
 	jobId?: number
+	source?: 'user' | 'auto' // 区分来源：用户手动下载 或 自动缓存
 }
 
 interface DownloadState {
 	tasks: Record<string, DownloadTask>
 	isPaused: boolean
 	concurrency: number
-	addToQueue: (tracks: Track[]) => void
+	addToQueue: (tracks: Track[], source?: 'user' | 'auto') => void
 	pauseDownloads: () => void
 	resumeDownloads: () => void
 	removeTask: (trackId: string) => void
@@ -29,7 +30,7 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
 	isPaused: false,
 	concurrency: 1,
 
-	addToQueue: (tracks) => {
+	addToQueue: (tracks, source = 'user') => {
 		const { tasks } = get()
 		const newTasks = { ...tasks }
 		let added = false
@@ -40,6 +41,7 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
 					track,
 					progress: 0,
 					status: 'waiting',
+					source,
 				}
 				added = true
 			}
