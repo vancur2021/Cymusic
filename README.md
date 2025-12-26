@@ -39,16 +39,34 @@
 
 ## ⚙️ 开发指南
 
-### 安装依赖
+### 1. 安装依赖
 
 ```bash
 yarn install
 ```
 
-### 运行 iOS 版本
+### 2. 安装 iOS 原生依赖 (仅 iOS)
+
+对于 iOS 平台，需要安装 CocoaPods 依赖：
+
+```bash
+cd ios && pod install && cd ..
+# 或者使用 npx
+npx pod-install
+```
+
+### 3. 运行项目
+
+#### iOS 版本
 
 ```bash
 npx expo run:ios
+```
+
+#### Android 版本
+
+```bash
+npx expo run:android
 ```
 
 ## ✅ 功能列表
