@@ -4,12 +4,15 @@ import { colors, fontSize, screenPadding } from '@/constants/tokens'
 import { useNavigationSearch } from '@/hooks/useNavigationSearch'
 import { defaultStyles } from '@/styles'
 import { showToast } from '@/utils/utils'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const PlaylistsScreen = () => {
 	const router = useRouter()
+	const scrollViewRef = useRef<ScrollView>(null)
+	const [scrollX, setScrollX] = useState(0)
 	const search = useNavigationSearch({
 		searchBarOptions: {
 			placeholder: '在歌单中搜索',
@@ -117,7 +120,16 @@ const PlaylistsScreen = () => {
 			>
 				{!search && (
 					<View style={styles.filterContainer}>
-						<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagsScrollContent}>
+						<ScrollView
+							ref={scrollViewRef}
+							horizontal
+							showsHorizontalScrollIndicator={false}
+							contentContainerStyle={styles.tagsScrollContent}
+							onScroll={(event) => {
+								setScrollX(event.nativeEvent.contentOffset.x)
+							}}
+							scrollEventThrottle={16}
+						>
 							<TouchableOpacity 
 								style={[styles.tag, sortId === 5 && styles.activeTag]} 
 								onPress={() => handleSortPress(5)}
@@ -143,6 +155,18 @@ const PlaylistsScreen = () => {
 								</TouchableOpacity>
 							))}
 						</ScrollView>
+						
+						<TouchableOpacity
+							style={styles.scrollButton}
+							onPress={() => {
+								scrollViewRef.current?.scrollTo({
+									x: scrollX + 200, // 向右滑动约200像素
+									animated: true
+								})
+							}}
+						>
+							<MaterialCommunityIcons name="chevron-right" size={24} color={colors.text} />
+						</TouchableOpacity>
 					</View>
 				)}
 
@@ -166,14 +190,15 @@ const PlaylistsScreen = () => {
 const styles = StyleSheet.create({
 	filterContainer: {
 		paddingVertical: 10,
-		// borderBottomWidth: 1,
-		// borderBottomColor: '#333',
-		height: 50, // 显式设置高度
-		backgroundColor: colors.background, // 吸顶时需要背景色遮挡内容
+		height: 50,
+		backgroundColor: colors.background,
+		flexDirection: 'row',
+		alignItems: 'center',
 	},
 	tagsScrollContent: {
 		paddingHorizontal: screenPadding.horizontal,
-		alignItems: 'center', // 垂直居中
+		alignItems: 'center',
+		paddingRight: 50, // 为右侧按钮留出空间
 	},
 	tag: {
 		paddingHorizontal: 12,
@@ -203,6 +228,24 @@ const styles = StyleSheet.create({
 	loadingContainer: {
 		paddingVertical: 20,
 		alignItems: 'center',
+	},
+	scrollButton: {
+		position: 'absolute',
+		right: 0,
+		height: '100%',
+		width: 40,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: colors.background, // 与背景同色以遮挡滚动的 Tag
+		// 添加一点阴影效果让它看起来浮在上面
+		shadowColor: "#000",
+		shadowOffset: {
+			width: -2,
+			height: 0,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
 	}
 })
 
