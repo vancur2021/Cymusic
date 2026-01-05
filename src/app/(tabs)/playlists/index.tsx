@@ -120,6 +120,18 @@ const PlaylistsScreen = () => {
 			>
 				{!search && (
 					<View style={styles.filterContainer}>
+						<TouchableOpacity
+							style={styles.leftScrollButton}
+							onPress={() => {
+								scrollViewRef.current?.scrollTo({
+									x: Math.max(0, scrollX - 200), // 向左滑动约200像素，但不小于0
+									animated: true
+								})
+							}}
+						>
+							<MaterialCommunityIcons name="chevron-left" size={24} color={colors.text} />
+						</TouchableOpacity>
+
 						<ScrollView
 							ref={scrollViewRef}
 							horizontal
@@ -199,6 +211,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: screenPadding.horizontal,
 		alignItems: 'center',
 		paddingRight: 50, // 为右侧按钮留出空间
+		paddingLeft: 50, // 为左侧按钮留出空间
 	},
 	tag: {
 		paddingHorizontal: 12,
@@ -241,6 +254,24 @@ const styles = StyleSheet.create({
 		shadowColor: "#000",
 		shadowOffset: {
 			width: -2,
+			height: 0,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+	},
+	leftScrollButton: {
+		position: 'absolute',
+		left: 0,
+		height: '100%',
+		width: 40,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: colors.background,
+		zIndex: 1, // 确保在ScrollView之上
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 2,
 			height: 0,
 		},
 		shadowOpacity: 0.25,
